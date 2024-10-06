@@ -1,6 +1,7 @@
 from src.ahorcado import Ahorcado
 from src.preguntados import Preguntados
 from src.tres_en_raya import Tres_en_raya
+from src.piedra_papel_tijera import Piedra_Papel_Tijera
 from os import system
 
 #Falta programación defensiva. NO CONTROLA ERRORES
@@ -42,6 +43,8 @@ def main():
             Preguntados().jugar()
         if opcion == "3":
             Tres_en_raya().jugar()
+        if opcion == "4":
+            Piedra_Papel_Tijera().jugar()
         if opcion == "6":
             print("\n")
             print("Hasta luego 👋")
