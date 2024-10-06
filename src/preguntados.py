@@ -1,8 +1,6 @@
 import random
 from os import system
-
-#Falta comprobar si funciona bien que no se repita ninguna pregunta
-#Falta control de errores
+from time import sleep
 
 class Preguntados:
     def __init__(self):
@@ -52,16 +50,41 @@ class Preguntados:
     }
 }
 
-        self.diccionario_preguntas = {
-            "Pregunta": "r",
-            "Pregunta2": "r2",
-            "Pregunta3": "r3"
-            }
         self.pregunta_elegida = ""
         self.categoria = ""
         self.terminado = False
         self.rondas = 0
         self.preguntas_realizadas = []
+        self.input_erroneo = False
+        self.respuesta = ""
+        self.titulo_ascii = """    ____  ____  ______________  ___   ___________    ____  ____  _____
+   / __ \/ __ \/ ____/ ____/ / / / | / /_  __/   |  / __ \/ __ \/ ___/
+  / /_/ / /_/ / __/ / / __/ / / /  |/ / / / / /| | / / / / / / /\__ \ 
+ / ____/ _, _/ /___/ /_/ / /_/ / /|  / / / / ___ |/ /_/ / /_/ /___/ / 
+/_/   /_/ |_/_____/\____/\____/_/ |_/ /_/ /_/  |_/_____/\____//____/  
+                                                                      
+"""
+
+    def comprobar_respuesta(self):
+        if self.respuesta.isalpha() and self.respuesta != r"!\"#\$%&'\(\)\*\+,-\.\/:;<=>\?@\[\\\]\^_`\{\|\}~" and len(self.respuesta) == 1:
+            self.input_erroneo = False
+            if self.respuesta.lower() == self.pregunta_elegida["respuesta_correcta"]:
+                self.rondas = self.rondas + 1
+                if self.rondas == 9:
+                    print("HAS GANADO")
+                    self.terminado = True
+                else:
+                    print("\n\tEs correcto 🙌 Siguiente pregunta ⏭️")
+                    sleep(3)
+            else:
+                print("\n\tNo es correcto. Has perdido 😭", f"\n\n\tHas llegado hasta la pregunta: {self.rondas+1}")
+                self.categoria = ""
+                self.pregunta_elegida = ""
+                self.preguntas_realizadas = []
+                self.rondas = 0
+                self.terminado = True
+        else:
+            self.input_erroneo = True
 
     def elegir_pregunta(self):
         posicion_pregunta = random.choice(list(self.diccionario_preguntas_2[self.categoria]))
@@ -70,68 +93,72 @@ class Preguntados:
 
     def elegir_categoria(self):
         categorias = list(self.diccionario_preguntas_2.keys())
-        #string_print = list(map(lambda categoria: str(categoria), self.diccionario_preguntas_2))
         print(f"\n\tCategorias:\n")
         for categoria in categorias:
-            print(f"\t\t{categoria}\n")
-        categoria = input("\n\n\tElige categoria: ")
-        self.categoria = categoria.strip().capitalize()
-        self.elegir_pregunta()
-        print()
+            print("\t🔸 ", categoria)
+        print("\n\t═════════════════════════════════════════════════")
+        categoria = input("\n\tElige categoria: ")
+        self.categoria = categoria.capitalize().strip() if categoria.capitalize().strip() in categorias else ""
+        if self.categoria == "":
+            self.input_erroneo = True
+        else:
+            self.input_erroneo = False
+            
 
     def tablero(self):
-        print("\n\tBienvenido a preguntados\n")
+        system("cls")
+        print(f"{self.titulo_ascii}")
+        print("\t═════════════════════════════════════════════════")
         print("\n\tObjetivo: Responde bien 10 rondas seguidas y gana\n")
+        print("\t═════════════════════════════════════════════════")
+        if self.input_erroneo == True:
+            if self.categoria == "":
+                print("\n\t⚠️ Introduce una categoria valida ⚠️")
+            else:
+                if len(self.respuesta) > 1:
+                    print("\n\t⚠️ Introduce solo una letra a la vez ⚠️")
+                elif len(self.respuesta) == 0:
+                    print("\n\t⚠️ Introduce al menos una letra ⚠️")
+                else:
+                    print("\n\t⚠️ Introduce una letra valida ⚠️")
+        
         if self.categoria == "":
             self.elegir_categoria()
-        self.elegir_pregunta()
-        print(f"\tPregunta {self.rondas+1}\n")
-        pregunta = self.pregunta_elegida["pregunta"]
-        print(f"\t{pregunta}\n")
-        opciones = self.pregunta_elegida["opciones"]
-        for opcion in opciones:
-            print(f"\t\t{opcion}")
-
-    #posiblemente lo quite
-    def restablecer_tablero(self):
-        self.rondas = 0
-        self.categoria = ""
-        self.preguntas_realizadas = []
+        else:
+            #print("\t═════════════════════════════════════════════════")
+            self.elegir_pregunta()
+            print(f"\n\tPregunta {self.rondas+1}\n")
+            pregunta = self.pregunta_elegida["pregunta"]
+            print(f"\t{pregunta}\n")
+            opciones = self.pregunta_elegida["opciones"]
+            for opcion in opciones:
+                print(f"\t\t{opcion}")
+            print("\n\t═════════════════════════════════════════════════")
         
-
+        
     def jugar(self):
         system("cls")
+        print("\n\t\t¡Bienvenido a preguntados!\n")
         while True:
+            #Compruebo si quiere volver a empezar, si es afirmativo se reinicia todo
+            #en caso contrario sale del bucle volviendo así al menú
             if self.terminado == True:
-                opcion = input("¿Quieres volver a jugar?\nSi - No\n")
+                opcion = input("\n\t¿Quieres volver a jugar?\n\n\tEscribe s para si, n para no\n\n\t--> ")
                 if opcion.lower() == "s" or opcion.lower() == "si":
                     self.rondas = 0
                     self.categoria = ""
                     self.preguntas_realizadas = []
                     self.terminado = False
                 else:
-                    print("Hasta luego")
+                    print("\n\t\t\tHasta luego 👋")
                     break
             else:
                 self.tablero()
-                valor = input("\n\tIntroduce la letra de tu respuesta: ")
-                if valor == 'q':
-                    print("Hasta luego")
-                    break
-                if valor.lower() == self.pregunta_elegida["respuesta_correcta"]:
-                    self.rondas = self.rondas + 1
-                    if self.rondas == 2:
-                        print("HAS GANADO")
-                        self.terminado = True
-                    else:
-                        print("\n\tEs correcto 🙌 Siguiente pregunta ⏭️")
-                else:
-                    print("No es correcto. Has perdido 😭")
-                    self.categoria = ""
-                    self.pregunta_elegida = ""
-                    self.preguntas_realizadas = []
-                    self.rondas = 0
-                    self.terminado = True
+                if self.pregunta_elegida != "":
+                    self.respuesta = input("\n\tIntroduce tu respuesta: ")
+                    self.comprobar_respuesta()
+
+                
                         
             
             
