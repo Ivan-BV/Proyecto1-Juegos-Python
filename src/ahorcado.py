@@ -84,7 +84,7 @@ class Ahorcado:
 ]
 
         #self.lista_palabras = ["hola", "manolo", "hoy", "mañana", "pasado"]
-        self.letras = list(self.lista_palabras_2[random.randint(0, len(self.lista_palabras)-1)])
+        self.letras = list(self.lista_palabras_2[random.randint(0, len(self.lista_palabras_2)-1)])
         self.letras_adivinadas = []
         self.vidas = len(self.dibujos)
         self.letra = ''
